@@ -4,8 +4,10 @@
   <h1>Welcome to my vite app</h1>
   <h2>{{ msg }}</h2>
   <nav>
-    <router-link to="/">Home</router-link>
-    <router-link to="/about">About</router-link>
+    <router-link to="/"> Home ||</router-link>
+    <router-link to="/about"> About ||</router-link>
+    <router-link to="/dnc"> dynamic ||</router-link>
+    <router-link to="/dnc2"> dynamic2 </router-link>
   </nav>
   <router-view></router-view>
 </template>
