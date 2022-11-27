@@ -30,6 +30,11 @@ export default {
                         _uid: "X1JAfdsZxy",
                         component: "foo",
                         headline: "Puki ja is the king"
+                    },
+                    {
+                        _uid: "S54dS2salD",
+                        component: "bar",
+                        title: "Puki ja wallakuluminalla"
                     }
                 ]
             }
