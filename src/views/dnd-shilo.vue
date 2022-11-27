@@ -15,7 +15,7 @@
           :get-child-payload="getCardPayload(column.id)" @drop="(e) => onCardDrop(column.id, e)">
 
           <!-- Items -->
-    
+
         </Container>
       </div>
     </Draggable>

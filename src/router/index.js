@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import home from '../views/home.vue'
 import about from '../views/about.vue'
 import dnd from '../views/dnd.vue'
+import dndShilo from '../views/dnd-shilo.vue'
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -20,6 +21,11 @@ const router = createRouter({
       path: '/dnd',
       name: 'dnd',
       component: dnd,
+    },
+    {
+      path: '/dnd-shilo',
+      name: 'dnd-shilo',
+      component: dndShilo,
     },
   ],
 })

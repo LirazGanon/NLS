@@ -7,6 +7,7 @@
     <router-link to="/">Home</router-link>
     <router-link to="/about">About</router-link>
     <router-link to="/dnd">dnd</router-link>
+    <router-link to="/dnd-shilo">dndShilo</router-link>
   </nav>
   <router-view></router-view>
 </template>
