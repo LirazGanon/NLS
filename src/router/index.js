@@ -4,6 +4,7 @@ import about from '../views/about.vue'
 import dnc from '../views/dnc.vue'
 import dnc2 from '../views/dnc2.vue'
 import dnd from '../views/dnd.vue'
+import lirazdnd from '../views/lirazdnd.vue'
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -32,6 +33,11 @@ const router = createRouter({
       path: '/dnd',
       name: 'dnd',
       component: dnd,
+    },
+    {
+      path: '/lirazdnd',
+      name: 'lirazdnd',
+      component: lirazdnd,
     },
   ],
 })
