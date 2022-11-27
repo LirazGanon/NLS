@@ -5,8 +5,7 @@
 
       <div v-for="(items, index) in groups"
         :key="index"
-        class="column"
-      >
+        class="column">
         <div>
           <label>
             <input type="checkbox" v-model="flags[index].drop"> Accept Drop
@@ -15,7 +14,7 @@
             <input type="checkbox" v-model="flags[index].animate"> Animate Drop
           </label>
         </div>
-        <Container :data-index="index" group-name="column"
+        <Container :data-index="index" group-name="column">
 
           <!-- Items -->
 
@@ -44,7 +43,7 @@
 </template>
 
 <script>
-import { Container, Draggable } from 'vue-smooth-dnd'
+// import { Container, Draggable } from 'vue-smooth-dnd'
 import { applyDrag, generateItems } from '../services/utils.js'
 let i = 0
 function id () {
@@ -59,8 +58,8 @@ function generate (num) {
 export default {
   name: 'Events',
   components: {
-    Container,
-    Draggable
+    // Container,
+    // Draggable
   },
   data () {
     return {
