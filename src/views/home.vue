@@ -1,6 +1,7 @@
 <template>
     <section class="">
         <h1>Home</h1>
+        <h1>פשוווווטטטטט</h1>
         <!-- <fancy-text txt="Fancy text" /> -->
         <custom-button>
             <h1>Click me!</h1>
