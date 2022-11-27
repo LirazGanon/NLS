@@ -1,4 +1,6 @@
 <template>
+  <img src="./assets/wicks.png" alt="" />
+  <br>
   <h1>Welcome to my vite app</h1>
   <h2>{{ msg }}</h2>
   <nav>
