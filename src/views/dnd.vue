@@ -1,103 +1,182 @@
 <template>
-  <Container class="h-full flex overflow-x-auto gap-8  p-8" group-name="cols" tag="div" orientation="horizontal"
-    @drop="onColumnDrop($event)">
-    <Draggable class="bg-gray-200 dark:bg-gray-700 rounded-lg h-full w-96 flex-shrink-0 shadow-xl"
-      v-for="column in scene.children" :key="column.id">
-      <div class="h-full flex flex-col">
+  <div class="wide-page">
 
-        <!-- header-->
-        <div class="cursor-move rounded-t-lg p-4 space-x-4 bg-primary text-white flex space-x-2">
-          <span class="text-lg">{{ column.name }}</span>
+    <div class="columns">
+
+      <div v-for="(items, index) in groups"
+        :key="index"
+        class="column"
+      >
+        <div>
+          <label>
+            <input type="checkbox" v-model="flags[index].drop"> Accept Drop
+          </label>
+          <label>
+            <input type="checkbox" v-model="flags[index].animate"> Animate Drop
+          </label>
         </div>
-        <!-- column -->
-        <Container class="flex-grow overflow-y-auto overflow-x-hidden" orientation="vertical" group-name="col-items"
-          :shouldAcceptDrop="(e, payload) => (e.groupName === 'col-items' && !payload.loading)"
-          :get-child-payload="getCardPayload(column.id)" @drop="(e) => onCardDrop(column.id, e)">
+        <Container :data-index="index" group-name="column"
 
-          <!-- Items -->
+          :get-child-payload="itemIndex => getChildPayload(index, itemIndex)"
+          :should-accept-drop="(src, payload) => getShouldAcceptDrop(index, src, payload)"
+          :should-animate-drop="(src, payload) => getShouldAnimateDrop(index, src, payload)"
 
+          @drag-start="onDragStart"
+          @drag-enter="onDragEnter(index)"
+          @drag-leave="onDragLeave(index)"
+          @drag-end="onDragEnd"
+          @drop="onDrop(index, $event)"
+        >
+          <Draggable v-for="item in items" :key="item.id">
+            <div class="draggable-item">
+              {{ item.data }}
+            </div>
+          </Draggable>
         </Container>
       </div>
-    </Draggable>
-  </Container>
+
+    </div>
+
+    <div class="controls">
+      <div>
+        <button @click="removeColumn()" :disabled="groups.length === 1">Remove Column</button>
+        <button @click="addColumn()">Add Column</button>
+      </div>
+      <div>
+        <label v-for="(key, name) in logs" :key="name">
+          <input type="checkbox" v-model="logs[name]"> {{ name }}
+        </label>
+        <hr>
+        <label>
+          <input type="checkbox" v-model="logPayload"> Log payload
+        </label>
+      </div>
+    </div>
+
+  </div>
 </template>
 
 <script>
-import { Container, Draggable } from 'vue3-smooth-dnd'
-import { applyDrag, generateItems, generateWords } from '../services/utils.js'
-
-// mock
-
+import { Container, Draggable } from 'vue-smooth-dnd'
+import { applyDrag, generateItems } from '../services/utils.js'
+let i = 0
+function id () {
+  return `item-${++i}`
+}
+function generate (num) {
+  return generateItems(5, i => ({
+    id: id(),
+    data: `Draggable ${num} - ${i + 1}`
+  }))
+}
 export default {
-  components: { Container, Draggable },
-  data() {
+  name: 'Events',
+  components: {
+    Container,
+    Draggable
+  },
+  data () {
     return {
-      scene: {
-        type: 'container',
-        props: {
-          orientation: 'horizontal'
-        },
-        children: generateItems(8, i => ({
-          id: `column${i}`,
-          type: 'container',
-          name: generateWords(Math.random() * 2 + 1),
-          props: {
-            orientation: 'vertical',
-          },
-          children: generateItems(+(Math.random() * 10).toFixed() + 5, j => ({
-            type: 'draggable',
-            id: `${i}${j}`,
-            loading: false,
-            data: generateWords(Math.random() * 12 + 2)
-          }))
-        }))
+      groups: [],
+      flags: [],
+      logs: {
+        'get-child-payload': true,
+        'should-accept-drop': false,
+        'should-animate-drop': false,
+        'drag-start': true,
+        'drag-end': true,
+        'drag-enter': true,
+        'drag-leave': true,
+        'drop': true
       },
+      logPayload: true
     }
   },
-  mounted() { },
+  created () {
+    this.addColumn()
+  },
   methods: {
-    onColumnDrop(dropResult) {
-      const scene = Object.assign({}, this.scene)
-      scene.children = applyDrag(scene.children, dropResult)
-      this.scene = scene
+    // -----------------------------------------------------------------------------------------------------------------
+    // callbacks
+    getChildPayload (groupIndex, itemIndex) {
+      this.log('get-child-payload', groupIndex, itemIndex)
+      return this.groups[groupIndex][itemIndex]
     },
-    onCardDrop(columnId, dropResult) {
-
-      // check if element where ADDED or REMOVED in current collumn
-      if (dropResult.removedIndex !== null || dropResult.addedIndex !== null) {
-
-        const scene = Object.assign({}, this.scene)
-        const column = scene.children.filter(p => p.id === columnId)[0]
-        const itemIndex = scene.children.indexOf(column)
-        const newColumn = Object.assign({}, column)
-
-        // check if element was ADDED in current column
-        if ((dropResult.removedIndex == null && dropResult.addedIndex >= 0)) {
-          // your action / api call
-          dropResult.payload.loading = true
-          // simulate api call
-          setTimeout(function () { dropResult.payload.loading = false }, (Math.random() * 5000) + 1000);
-        }
-
-        newColumn.children = applyDrag(newColumn.children, dropResult)
-        scene.children.splice(itemIndex, 1, newColumn)
-        this.scene = scene
+    getShouldAcceptDrop (index, sourceContainerOptions, payload) {
+      this.log('should-accept-drop', sourceContainerOptions, payload)
+      return this.flags[index].drop
+    },
+    getShouldAnimateDrop (index, sourceContainerOptions, payload) {
+      this.log('should-animate-drop', sourceContainerOptions, payload)
+      return this.flags[index].animate
+    },
+    // -----------------------------------------------------------------------------------------------------------------
+    // events
+    onDragStart (...args) {
+      this.log('drag-start', ...args)
+    },
+    onDragEnd (...args) {
+      this.log('drag-end', ...args)
+    },
+    onDragEnter (...args) {
+      this.log('drag-enter', ...args)
+    },
+    onDragLeave (...args) {
+      this.log('drag-leave', ...args)
+    },
+    onDrop (groupIndex, dropResult) {
+      let result = applyDrag(this.groups[groupIndex], dropResult)
+      Vue.set(this.groups, groupIndex, result)
+      this.log('drop', dropResult)
+    },
+    // -----------------------------------------------------------------------------------------------------------------
+    // app
+    addColumn () {
+      this.groups.push(generate(this.groups.length + 1))
+      this.flags.push({drop: true, animate: true})
+    },
+    removeColumn () {
+      this.groups.pop()
+      this.flags.pop()
+    },
+    log (name, ...args) {
+      if (this.logs[name]) {
+        this.logPayload
+          ? console.log(name, ...args)
+          : console.log(name)
       }
-    },
-    getCardPayload(columnId) {
-      return index => {
-        return this.scene.children.filter(p => p.id === columnId)[0].children[index]
-      }
-    },
+    }
   }
 }
 </script>
-<style>
-/** NB: dont remove, 
-* When using orientation="horizontal" it auto sets "display: table"
-* In this case we need flex and not display table  
-*/
-.smooth-dnd-container.horizontal {
-  display: flex !important;
-}
+
+<style scoped>
+  .controls {
+    margin-top: 1em;
+  }
+  .controls > div {
+    padding-top: 1em;
+  }
+  label {
+    display: block;
+    line-height: 1.6em;
+  }
+  .columns {
+    display: flex;
+    justify-content: stretch;
+  }
+  .column {
+    margin-right: 20px;
+    flex: 1;
+  }
+  .column {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+  .column .smooth-dnd-container.vertical {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
 </style>
