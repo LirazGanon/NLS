@@ -6,6 +6,7 @@
   <nav>
     <router-link to="/"> Home ||</router-link>
     <router-link to="/about"> About ||</router-link>
+    <router-link to="/dnd"> dnd ||</router-link>
     <router-link to="/dnc"> dynamic ||</router-link>
     <router-link to="/dnc2"> dynamic2 </router-link>
   </nav>
