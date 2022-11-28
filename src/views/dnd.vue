@@ -1,168 +1,104 @@
 <template>
   <div class="wide-page">
-
     <div class="columns">
 
-      <div v-for="(items, index) in groups"
-        :key="index"
-        class="column">
-        <div>
-          <label>
-            <input type="checkbox" v-model="flags[index].drop"> Accept Drop
-          </label>
-          <label>
-            <input type="checkbox" v-model="flags[index].animate"> Animate Drop
-          </label>
-        </div>
-        <Container :data-index="index" group-name="column">
+      <!-- <components :cmps="cmps" /> -->
+      <cmps-dynamic :cmps="cmps" />
+      <site :site="site" />
 
-          <!-- Items -->
-
-        </Container>
-      </div>
 
     </div>
-
-    <div class="controls">
-      <div>
-        <button @click="removeColumn()" :disabled="groups.length === 1">Remove Column</button>
-        <button @click="addColumn()">Add Column</button>
-      </div>
-      <div>
-        <label v-for="(key, name) in logs" :key="name">
-          <input type="checkbox" v-model="logs[name]"> {{ name }}
-        </label>
-        <hr>
-        <label>
-          <input type="checkbox" v-model="logPayload"> Log payload
-        </label>
-      </div>
-    </div>
-
   </div>
+
+
+
 </template>
 
 <script>
-// import { Container, Draggable } from 'vue-smooth-dnd'
-import { applyDrag, generateItems } from '../services/utils.js'
-let i = 0
-function id () {
-  return `item-${++i}`
-}
-function generate (num) {
-  return generateItems(5, i => ({
-    id: id(),
-    data: `Draggable ${num} - ${i + 1}`
-  }))
-}
+import { Container, Draggable } from "vue3-smooth-dnd";
+import site from '../components/site.vue'
+import cmpsDynamic from '../components/cmps-dynamic.vue'
+// import components from '../components/components.vue'
+
 export default {
-  name: 'Events',
-  components: {
-    // Container,
-    // Draggable
-  },
-  data () {
+  name: "app",
+  components: { Container, Draggable, site, cmpsDynamic },
+  data() {
     return {
-      groups: [],
-      flags: [],
-      logs: {
-        'get-child-payload': true,
-        'should-accept-drop': false,
-        'should-animate-drop': false,
-        'drag-start': true,
-        'drag-end': true,
-        'drag-enter': true,
-        'drag-leave': true,
-        'drop': true
+      cmps: {
+        type: [{
+          "id": "item-1",
+          "data": "HEADER"
+        },
+        {
+          "id": "item-2",
+          "data": "HERO"
+        },
+        {
+          "id": "item-3",
+          "data": "FORUM"
+        },
+        {
+          "id": "item-4",
+          "data": "TEXT"
+        },
+        {
+          "id": "item-5",
+          "data": "FOOTER"
+        }],
+        options: {
+          "drop": false,
+          "animate": true
+        }
       },
-      logPayload: true
-    }
-  },
-  created () {
-    this.addColumn()
-  },
-  methods: {
-    // -----------------------------------------------------------------------------------------------------------------
-    // callbacks
-    getChildPayload (groupIndex, itemIndex) {
-      this.log('get-child-payload', groupIndex, itemIndex)
-      return this.groups[groupIndex][itemIndex]
-    },
-    getShouldAcceptDrop (index, sourceContainerOptions, payload) {
-      this.log('should-accept-drop', sourceContainerOptions, payload)
-      return this.flags[index].drop
-    },
-    getShouldAnimateDrop (index, sourceContainerOptions, payload) {
-      this.log('should-animate-drop', sourceContainerOptions, payload)
-      return this.flags[index].animate
-    },
-    // -----------------------------------------------------------------------------------------------------------------
-    // events
-    onDragStart (...args) {
-      this.log('drag-start', ...args)
-    },
-    onDragEnd (...args) {
-      this.log('drag-end', ...args)
-    },
-    onDragEnter (...args) {
-      this.log('drag-enter', ...args)
-    },
-    onDragLeave (...args) {
-      this.log('drag-leave', ...args)
-    },
-    onDrop (groupIndex, dropResult) {
-      let result = applyDrag(this.groups[groupIndex], dropResult)
-      Vue.set(this.groups, groupIndex, result)
-      this.log('drop', dropResult)
-    },
-    // -----------------------------------------------------------------------------------------------------------------
-    // app
-    addColumn () {
-      this.groups.push(generate(this.groups.length + 1))
-      this.flags.push({drop: true, animate: true})
-    },
-    removeColumn () {
-      this.groups.pop()
-      this.flags.pop()
-    },
-    log (name, ...args) {
-      if (this.logs[name]) {
-        this.logPayload
-          ? console.log(name, ...args)
-          : console.log(name)
+      site: {
+        layout: [
+          {
+            "id": "item-6",
+            "data": "Draggable 2 - 1"
+          },
+          {
+            "id": "item-7",
+            "data": "Draggable 2 - 2"
+          },
+          {
+            "id": "item-8",
+            "data": "Draggable 2 - 3"
+          },
+          {
+            "id": "item-9",
+            "data": "Draggable 2 - 4"
+          },
+          {
+            "id": "item-10",
+            "data": "Draggable 2 - 5"
+          }
+        ],
+        options: {
+          "drop": true,
+          "animate": true
+        }
       }
     }
-  }
+  },
+
 }
 </script>
 
+
 <style scoped>
-  .controls {
-    margin-top: 1em;
-  }
-  .controls > div {
-    padding-top: 1em;
-  }
-  label {
-    display: block;
-    line-height: 1.6em;
-  }
-  .columns {
-    display: flex;
-    justify-content: stretch;
-  }
-  .column {
-    margin-right: 20px;
-    flex: 1;
-  }
-  .column {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-  }
-  .column .smooth-dnd-container.vertical {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-  }
+.columns>* {
+  margin-left: 50px;
+}
+
+.columns {
+  display: flex;
+  justify-content: stretch;
+}
+
+.column .smooth-dnd-container.vertical {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
 </style>

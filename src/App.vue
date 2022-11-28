@@ -26,5 +26,10 @@ export default {
       msg: 'This is my msg'
     }
   },
+  created() {
+    this.$store.dispatch({ type: 'loadCmps' })
+    this.$store.dispatch({ type: 'loadSite' })
+
+  }
 }
 </script>
